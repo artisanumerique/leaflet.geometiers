@@ -1,0 +1,23 @@
+{
+  "name": "leaflet.geometiers.js",
+  "description": "",
+  "main": "leaflet.geometiers.js",
+  "authors": [
+    "M.B"
+  ],
+  "license": "ISC",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "material-design-lite": "^1.3.0",
+    "Leaflet.label": "https://github.com/Leaflet/Leaflet.label.git#^0.2.1",
+    "jquery": "^3.1.1",
+    "mapbox.js": "^2.4.0"
+  }
+}
