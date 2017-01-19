@@ -1,7 +1,7 @@
 {
   "name": "leaflet.geometiers.js",
   "description": "",
-  "main": "leaflet.geometiers.js",
+  "main": "dist/leaflet.geometiers.min.js",
   "authors": [
     "M.B"
   ],
