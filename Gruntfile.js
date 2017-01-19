@@ -6,7 +6,7 @@ module.exports = function(grunt){
 	      separator: ';',
 	    },
 	    dist: {
-	      src: ['simple_statistics.js', 'leaflet.geometiers.js'],
+	      src: ['simple_statistics.js','bower_components/Leaflet.label/dist/leaflet.label.js','leaflet.geometiers.js'],
 	      dest: 'dist/leaflet.geometiers.js',
 	    },
 	  },
