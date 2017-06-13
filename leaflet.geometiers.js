@@ -674,7 +674,7 @@ function number_format(number, decimals, dec_point, thousands_sep) {
             if(!L.Browser.touch ||!L.Browser.mobile){
                     layer.on({mouseover: mouseOver, mouseout: mouseOut, click: zoom,
                 })
-                .bindLabel( "", { className:'labelZone', direction: 'auto', offset:[50, -10] });
+                .bindLabel( "geo", { className:'labelZone', direction: 'auto', offset:[50, -10] });
             }
             else{
             layer.on({mouseover: mouseOver,mouseout: mouseOut,click: zoom})
