@@ -475,6 +475,8 @@ function number_format(number, decimals, dec_point, thousands_sep) {
           
             plugin.settings.decoupageInit  = plugin.settings.decoupage;
 
+            plugin.settings.decoupage = {name:'decoupage',value:plugin.settings.decoupage};
+
             // Initialisation de la carte
             carte = new L.Map($element.attr("id"), {
                   zoomControl: false,
