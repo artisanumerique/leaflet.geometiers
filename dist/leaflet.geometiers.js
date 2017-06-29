@@ -2480,7 +2480,7 @@ var Couleur = (function () {
         var updateBreadcrumb = function(layer){
             
             
-
+            $('#jq-dropdown-navigation').removeClass('open');
             $('#jq-dropdown-navigation').empty();
             
             //var button = $('<button id="btn-navigation"  class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent">nnnn</button>');
@@ -2556,7 +2556,8 @@ var Couleur = (function () {
         // Retourne une boite de sélection HTML pour le découpage
         var updateSelectionDecoupage = function(){
 
-             $('#jq-dropdown-decoupe').empty();
+            $('#jq-dropdown-decoupe').removeClass('open');
+            $('#jq-dropdown-decoupe').empty();
             
             //var button = $('<button id="btn-decoupage"  class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored">Découpage du territoire</button>');
             
