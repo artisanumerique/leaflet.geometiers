@@ -2097,7 +2097,7 @@ var Couleur = (function () {
                         opacity: 1,
                         color: plugin.settings.colorLayerContour, 
                         fillOpacity: 1, 
-                        fillColor: '#31313b'
+                        fillColor: '#BDBDBD'
                         },
             onEachFeature : initEvenement}).addTo(carte);
             
