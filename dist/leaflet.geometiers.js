@@ -2256,7 +2256,7 @@ var Couleur = (function () {
             else{
                 
                 layer.setStyle({
-                    fillColor: "#25252c",
+                    fillColor: "#BDBDBD",
                     weight: 1, opacity: 1, 
                 
                     fillOpacity: 1
