@@ -1903,10 +1903,10 @@ var Couleur = (function () {
 (function($) {
     
 
-	$.geometiers = function(element, options) {
+    $.geometiers = function(element, options) {
 
 
-		// Options défaut
+        // Options défaut
         var defaults = {
             
             // token access
@@ -1964,6 +1964,7 @@ var Couleur = (function () {
             selectDecoupage:null,
             selectBreadcrumb:null,
             selectZone:null,
+            selectAffichePins:null,
             
             // fonctions
             navigationControl : false,
@@ -1998,7 +1999,10 @@ var Couleur = (function () {
 
         // parent group;
         var parent = new L.FeatureGroup();
-        
+
+        // marker
+        var affichePins;
+
         // Initialisation du plugin
         plugin.init = function() {
 
@@ -2012,8 +2016,8 @@ var Couleur = (function () {
             // Initialisation de la carte
             carte = new L.Map($element.attr("id"), {
                   zoomControl: false,
-                  minZoom: plugin.settings.zoom,
-                  maxZoom: plugin.settings.maxZoom, 
+                  minZoom: 10,
+                  maxZoom: 16, 
                   attributionControl: false,
                   dragging: true,
                   scrollWheelZoom: true,
@@ -2045,6 +2049,11 @@ var Couleur = (function () {
             parent.addTo(carte);
 
             var coord = parent.getBounds().getCenter();
+
+            // init coordonnée parent
+            plugin.settings.lat = coord.lat;
+            plugin.settings.lng = coord.lng;
+
             carte.setView([coord.lat, coord.lng], plugin.settings.zoom);
             carte.setMaxBounds(carte.getBounds());
 
@@ -2053,6 +2062,12 @@ var Couleur = (function () {
             
             if(plugin.settings.initParent)plugin.settings.initParent(datas);
         }
+
+
+       /* plugin.setPinsPosition = function(){
+
+        }*/
+
         
         // si filtre particulier
         plugin.isDensiteh = function(){
@@ -2064,9 +2079,9 @@ var Couleur = (function () {
         // Retourne un tableau de critères à envoyer au controleur pour générer le GeoJSON
         // On concatène les filtres, le territoire sélectionné, le découpage, le controleur
         plugin.datas = function(){
-                return $.unique(plugin.settings.filtres.concat(plugin.settings.zoneSelect,
-                        plugin.settings.decoupage
-                ));
+            return $.unique(plugin.settings.filtres.concat(plugin.settings.zoneSelect,
+                    plugin.settings.decoupage
+            ));
         }
         
         // Retourne un item de la liste de données
@@ -2192,7 +2207,7 @@ var Couleur = (function () {
                 legende = new Legende({'couleurs':couleurs}); 
                 legende.addTo(carte);
             }
-            
+
 
         }
         
@@ -2208,7 +2223,7 @@ var Couleur = (function () {
                 .bindLabel( "geo", { className:'labelZone', direction: 'auto', offset:[50, -10] });
             }
             else{
-            layer.on({mouseover: mouseOver,mouseout: mouseOut,click: zoom})
+                layer.on({mouseover: mouseOver,mouseout: mouseOut,click: zoom})
             }
         }
           
@@ -2240,7 +2255,7 @@ var Couleur = (function () {
                   });
                   if(plugin.settings.updateMap)plugin.settings.updateMap();
               }
-           },5); // delay between layer adds in milliseconds
+           },0); // delay between layer adds in milliseconds
         }
         
         
@@ -2476,10 +2491,41 @@ var Couleur = (function () {
         }
         
         
-          // Met à jour les étapes de la navigation des types de territoire sélectionnés
-        var updateBreadcrumb = function(layer){
+        // Met à jour les étapes de la navigation des types de territoire sélectionnés
+       /*var updateBreadcrumb = function(layer){
             
-            
+            if(carte.hasLayer(affichePins)){
+                    carte.removeLayer(affichePins);
+            }
+
+            if(layer.feature.properties.type == "commune"){
+
+                var latLng = layer.getBounds().getCenter();
+
+                var LeafIcon = L.Icon.extend({
+                  options: {
+                    texte: '',
+                    iconSize:     [200, 40], // size of the icon
+                    shadowAnchor: [0, 0],  // the same for the shadow
+                    className: 'pins-div-icon',
+                    iconAnchor:   [0, 0],
+                  },
+                  createIcon: function () {
+                    var div = document.createElement('div');
+                    var numdiv = document.createElement('p');
+                    numdiv.innerHTML = this.options['texte'] || '';
+                    div.appendChild ( numdiv );
+                    this._setIconStyles(div, 'icon');
+                    return div;
+                 }});
+
+                var myicon = new LeafIcon({texte: 'Voir les établissements'});
+                affichePins = L.marker(latLng,{icon:myicon}).setLatLng(latLng).addTo(carte);
+
+            } 
+          
+
+
             $('#jq-dropdown-navigation').removeClass('open');
             $('#jq-dropdown-navigation').empty();
             
@@ -2517,6 +2563,10 @@ var Couleur = (function () {
             
             $('#jq-dropdown-navigation li').on('click', function(e) {
                 
+                 if(carte.hasLayer(affichePins)){
+                    carte.removeLayer(affichePins);
+                }
+
                 
                 var layer = getLayerListeGeoJson($(this).data('code'),$(this).data('type'));
                 
@@ -2545,12 +2595,116 @@ var Couleur = (function () {
                     
                 }
 
+
+
+            });
+
+        }*/
+        
+        
+        // Met à jour les étapes de la navigation des types de territoire sélectionnés
+       var updateBreadcrumb = function(layer){
+            
+            if(carte.hasLayer(affichePins)){
+                    carte.removeLayer(affichePins);
+            }
+
+            if(layer.feature.properties.type == "commune"){
+
+                var latLng = layer.getBounds().getCenter();
+
+                var LeafIcon = L.Icon.extend({
+                  options: {
+                    texte: '',
+                    iconSize:     [200, 40], // size of the icon
+                    shadowAnchor: [0, 0],  // the same for the shadow
+                    className: 'pins-div-icon',
+                    iconAnchor:   [0, 0],
+                  },
+                  createIcon: function () {
+                    var div = document.createElement('div');
+                    var numdiv = document.createElement('p');
+                    numdiv.innerHTML = this.options['texte'] || '';
+                    div.appendChild ( numdiv );
+                    this._setIconStyles(div, 'icon');
+                    return div;
+                 }});
+
+                var myicon = new LeafIcon({texte: 'Voir les établissements'});
+                affichePins = L.marker(latLng,{icon:myicon}).setLatLng(latLng).addTo(carte);
+
+                affichePins.on('click', function(e) {
+                    if(plugin.settings.selectAffichePins)plugin.settings.selectAffichePins(layer);
+                })    
+
+            } 
+          
+
+
+            $('#jq-dropdown-navigation').removeClass('open');
+            $('#jq-dropdown-navigation').empty();
+            
+            var button = $('<button id="btn-navigation" class="mdl-button mdl-js-button mdl-button--icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="material-icons">&#xE5C4;</i></button>')
+
+
+            var i = getIndiceGroupeLayers(layer);
+            listeEtapes.splice(i+1, listeEtapes.length);
+            
+            //var etape = $('<li/>').addClass('mdl-menu__item')
+            button.attr('data-type', layer.feature.properties.parent.type);
+            button.attr('data-code', layer.feature.properties.parent.code);
+            //.text(layer.feature.properties.parent.nom);
+
+            //listeEtapes[i] = etape;
+
+           // for (var i = listeEtapes.length-1; i >= 0; i--)
+             //   listeEtapes[i].appendTo(ul);
+
+            button.appendTo($('#jq-dropdown-navigation'));
+            //ul.appendTo($('#jq-dropdown-navigation'));
+            
+            componentHandler.upgradeElement(button.get(0));
+           // componentHandler.upgradeElement(ul.get(0));
+            
+            $('#jq-dropdown-navigation button').on('click', function(e) {
                 
+                if(carte.hasLayer(affichePins)){
+                    carte.removeLayer(affichePins);
+                }
+
+                var layer = getLayerListeGeoJson($(this).data('code'),$(this).data('type'));
+                
+                // si on a des étapes
+                if(layer != null){
+                    // on active le click pour le territoire recherché
+                    layer.on('click', zoom);
+                    layer.fireEvent('click');
+                }
+                // Sinon on retourne à l'étape d'accueil
+                else{
+                    
+                    deleteAllLayersOfTheMap();
+                      carte.setView([plugin.settings.lat, plugin.settings.lng], plugin.settings.zoom);
+                            
+                    //map.fitBounds(bounds);
+                    $('#jq-dropdown-navigation').empty();
+                    // Initialise la zone sélectionné
+                    plugin.settings.zoneSelect = {name:$(this).data('type'),value:$(this).data('code')};
+                    plugin.settings.decoupage = {name:"decoupage",value:plugin.settings.decoupageInit};
+
+                    //plugin.settings.decoupage = plugin.settings.decoupageInit;
+                    
+                    var datas = plugin.datas();
+                    if(plugin.settings.selectBreadcrumb)plugin.settings.selectBreadcrumb(datas);
+                    
+                }
+
+
+
             });
 
         }
-        
-        
+
        
         
         // Retourne une boite de sélection HTML pour le découpage
@@ -2601,6 +2755,8 @@ var Couleur = (function () {
                  componentHandler.upgradeElement(button.get(0));
                  componentHandler.upgradeElement(ul.get(0)); 
             }
+
+
            
             $('#jq-dropdown-decoupe li').on('click', function(e) {
                  plugin.settings.decoupage = {name:"decoupage",value:$(this).data("type")};
@@ -2611,14 +2767,14 @@ var Couleur = (function () {
 
 
 
-		// fire up the plugin!
+        // fire up the plugin!
         // call the "constructor" method
         plugin.init();
-	
-	}	
+    
+    }   
 
 
-	// add the plugin to the jQuery.fn object
+    // add the plugin to the jQuery.fn object
     $.fn.geometiers = function(options) {
       
         return this.each(function() {
