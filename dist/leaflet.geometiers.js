@@ -2016,8 +2016,8 @@ var Couleur = (function () {
             // Initialisation de la carte
             carte = new L.Map($element.attr("id"), {
                   zoomControl: false,
-                  minZoom: 10,
-                  maxZoom: 16, 
+                  minZoom: plugin.settings.zoom,
+                  maxZoom: plugin.settings.maxZoom, 
                   attributionControl: false,
                   dragging: true,
                   scrollWheelZoom: true,
