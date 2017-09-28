@@ -2240,7 +2240,7 @@ var Couleur = (function () {
         
         // Ajoutes les calques à la carte
         var addLayersToMap = function (i,nbrDeLayers) {           
-           setTimeout(function () {  
+          // setTimeout(function () {  
                
               if(geojson.getLayers()[i] != undefined)
                   listeGeoJson[listeGeoJson.length - 1].addLayer(geojson.getLayers()[i]);
@@ -2255,7 +2255,7 @@ var Couleur = (function () {
                   });
                   if(plugin.settings.updateMap)plugin.settings.updateMap();
               }
-           },0); // delay between layer adds in milliseconds
+           //},0); // delay between layer adds in milliseconds
         }
         
         
