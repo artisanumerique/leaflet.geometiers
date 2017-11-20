@@ -2016,8 +2016,8 @@ var Couleur = (function () {
             // Initialisation de la carte
             carte = new L.Map($element.attr("id"), {
                   zoomControl: false,
-                  minZoom: plugin.settings.zoom,
-                  maxZoom: plugin.settings.maxZoom, 
+                  minZoom: 9,
+                  maxZoom: 16, 
                   attributionControl: false,
                   dragging: true,
                   scrollWheelZoom: true,
@@ -2025,6 +2025,7 @@ var Couleur = (function () {
                   boxZoom: true,
                   tap: true
             });
+
 
         }
 
@@ -2139,9 +2140,8 @@ var Couleur = (function () {
         ////////////////////////////////////////////////////////////////////////////////////
         plugin.dessiner = function(result,layer) {
     
-       
-
             if(layer != undefined && layer != null){
+               
                 // On reinitialise la sélection précédente
                 resetStylelisteLayersSelect(layer);
                 layer.off('mouseout', mouseOut);
@@ -2184,7 +2184,6 @@ var Couleur = (function () {
             }
             else
                 couleurs = new Couleur(result);
-
 
             // Objet geojson
             geojson = L.geoJson(result, {style : appliquerStyle});
@@ -2240,7 +2239,7 @@ var Couleur = (function () {
         
         // Ajoutes les calques à la carte
         var addLayersToMap = function (i,nbrDeLayers) {           
-          // setTimeout(function () {  
+           //setTimeout(function () {  
                
               if(geojson.getLayers()[i] != undefined)
                   listeGeoJson[listeGeoJson.length - 1].addLayer(geojson.getLayers()[i]);
