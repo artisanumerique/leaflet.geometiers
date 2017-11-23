@@ -1,9 +1,28 @@
-/**
- * GEOMETIERS PLUGIN
- * 
- */
 
-(function() {
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+/// leaflet.geometiers.js
+function number_format(number, decimals, dec_point, thousands_sep) {
+        number = (number+'').replace(',', '').replace(' ', '');
+        var n = !isFinite(+number) ? 0 : +number, 
+            prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
+            sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
+            dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
+            s = '',
+            toFixedFix = function (n, prec) {
+                var k = Math.pow(10, prec);
+                return '' + Math.round(n * k) / k;
+            };
+        // Fix for IE parseFloat(0.55).toFixed(0) = 0;
+        s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.');
+        if (s[0].length > 3) {
+            s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
+        }
+        if ((s[1] || '').length < prec) {
+            s[1] = s[1] || '';
+            s[1] += new Array(prec - s[1].length + 1).join('0');
+        }
+        return s.join(dec);
+}
 
 
 function format(inte){
@@ -14,7 +33,6 @@ function format(inte){
         }   
         return(inte);
 }
-
 
 
 var Legende = L.Control.extend({
@@ -142,9 +160,6 @@ var Legende = L.Control.extend({
 
 
 
-
-
-
 var Grades = (function() {
         
         //trie un tableau
@@ -223,7 +238,6 @@ var Grades = (function() {
         return Grades;
 
 }());
-
 
 
 var Couleur = (function () {
@@ -313,13 +327,6 @@ var Couleur = (function () {
                       j--;                
                   }   
                   
-                  //return this.palette[j]; 
-                  
-                
-                  
-                  /*console.log("npalette[j]");
-                  console.log(npalette[j]);*/
-                  
                   return this.npalette[j];                
         }
         return Couleur;
@@ -327,61 +334,13 @@ var Couleur = (function () {
 }());
 
 
-function number_format(number, decimals, dec_point, thousands_sep) {
-    // *     example 1: number_format(1234.56);
-    // *     returns 1: '1,235'
-    // *     example 2: number_format(1234.56, 2, ',', ' ');
-    // *     returns 2: '1 234,56'
-    // *     example 3: number_format(1234.5678, 2, '.', '');
-    // *     returns 3: '1234.57'
-    // *     example 4: number_format(67, 2, ',', '.');
-    // *     returns 4: '67,00'
-    // *     example 5: number_format(1000);
-    // *     returns 5: '1,000'
-    // *     example 6: number_format(67.311, 2);
-    // *     returns 6: '67.31'
-    // *     example 7: number_format(1000.55, 1);
-    // *     returns 7: '1,000.6'
-    // *     example 8: number_format(67000, 5, ',', '.');
-    // *     returns 8: '67.000,00000'
-    // *     example 9: number_format(0.9, 0);
-    // *     returns 9: '1'
-    // *    example 10: number_format('1.20', 2);
-    // *    returns 10: '1.20'
-    // *    example 11: number_format('1.20', 4);
-    // *    returns 11: '1.2000'
-    // *    example 12: number_format('1.2000', 3);
-    // *    returns 12: '1.200'
-    // *    example 13: number_format('1 000,50', 2, '.', ' ');
-    // *    returns 13: '100 050.00'
-    number = (number+'').replace(',', '').replace(' ', '');
-    var n = !isFinite(+number) ? 0 : +number, 
-        prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
-        sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
-        dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
-        s = '',
-        toFixedFix = function (n, prec) {
-            var k = Math.pow(10, prec);
-            return '' + Math.round(n * k) / k;
-        };
-    // Fix for IE parseFloat(0.55).toFixed(0) = 0;
-    s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.');
-    if (s[0].length > 3) {
-        s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
-    }
-    if ((s[1] || '').length < prec) {
-        s[1] = s[1] || '';
-        s[1] += new Array(prec - s[1].length + 1).join('0');
-    }
-    return s.join(dec);
-}
-
 
 (function($) {
     
-    
+
     $.geometiers = function(element, options) {
-        
+
+
         // Options défaut
         var defaults = {
             
@@ -390,6 +349,9 @@ function number_format(number, decimals, dec_point, thousands_sep) {
             
             // login map
             mapLogin : 'art82.5d30wpk0',
+
+            // css
+            urlstyle: "cixlnex77000s2sntu1jcfn6o",
             
             // latitude defaut du fond de carte
             lat : '44.01667',
@@ -399,9 +361,12 @@ function number_format(number, decimals, dec_point, thousands_sep) {
             
             // opacity defaut
             opacity: 1,
+
+            // affichage des tiles
+            displayTiles:false,
             
             // zoom defaut
-            zoom: 10,
+            zoom: 8,
             
             // max zoom defaut
             maxZoom: 14,
@@ -434,6 +399,7 @@ function number_format(number, decimals, dec_point, thousands_sep) {
             selectDecoupage:null,
             selectBreadcrumb:null,
             selectZone:null,
+            selectAffichePins:null,
             
             // fonctions
             navigationControl : false,
@@ -465,8 +431,13 @@ function number_format(number, decimals, dec_point, thousands_sep) {
         
         // Conserve l'etat des sélections pour générer un fil d'arianne
         var listeEtapes = new Array();
-        
-        
+
+        // parent group;
+        var parent = new L.FeatureGroup();
+
+        // marker
+        var affichePins;
+
         // Initialisation du plugin
         plugin.init = function() {
 
@@ -480,8 +451,8 @@ function number_format(number, decimals, dec_point, thousands_sep) {
             // Initialisation de la carte
             carte = new L.Map($element.attr("id"), {
                   zoomControl: false,
-                  minZoom: plugin.settings.zoom,
-                  maxZoom: plugin.settings.maxZoom, 
+                  minZoom: 9,
+                  maxZoom: 16, 
                   attributionControl: false,
                   dragging: true,
                   scrollWheelZoom: true,
@@ -489,13 +460,15 @@ function number_format(number, decimals, dec_point, thousands_sep) {
                   boxZoom: true,
                   tap: true
             });
-              
+
+
         }
-        
-        
+
+
+ 
         // Initialise le territoire racine
         plugin.parent = function(datas) {
-            parent = L.featureGroup();
+            
             geojson = L.geoJson(datas, {
                 style :function (feature) {
                     return {
@@ -511,18 +484,22 @@ function number_format(number, decimals, dec_point, thousands_sep) {
             parent.addLayer(geojson);
             parent.addTo(carte);
 
-            //console.log(parent.getBounds().getCenter());
-
             var coord = parent.getBounds().getCenter();
+
+            // init coordonnée parent
+            plugin.settings.lat = coord.lat;
+            plugin.settings.lng = coord.lng;
+
             carte.setView([coord.lat, coord.lng], plugin.settings.zoom);
             carte.setMaxBounds(carte.getBounds());
 
-            //map.fitBounds(parent.getBounds()); 
 
             var datas = plugin.datas();
             
             if(plugin.settings.initParent)plugin.settings.initParent(datas);
         }
+
+
         
         // si filtre particulier
         plugin.isDensiteh = function(){
@@ -534,9 +511,9 @@ function number_format(number, decimals, dec_point, thousands_sep) {
         // Retourne un tableau de critères à envoyer au controleur pour générer le GeoJSON
         // On concatène les filtres, le territoire sélectionné, le découpage, le controleur
         plugin.datas = function(){
-                return $.unique(plugin.settings.filtres.concat(plugin.settings.zoneSelect,
-                        plugin.settings.decoupage
-                ));
+            return $.unique(plugin.settings.filtres.concat(plugin.settings.zoneSelect,
+                    plugin.settings.decoupage
+            ));
         }
         
         // Retourne un item de la liste de données
@@ -559,16 +536,15 @@ function number_format(number, decimals, dec_point, thousands_sep) {
             deleteAllLayersOfTheMap();
             carte.setView([plugin.settings.lat, plugin.settings.lng], plugin.settings.zoom);
             
-            plugin.settings.zoneSelect = {name:"departement",value:'1'};
+            //plugin.settings.zoneSelect = {name:"departement",value:'1'};
             plugin.settings.decoupage = {name:"decoupage",value:'commune'};
-              
 
             geojson = L.geoJson(result, {
                     style : {weight: 1, 
                         opacity: 1,
                         color: plugin.settings.colorLayerContour, 
                         fillOpacity: 1, 
-                        fillColor: '#31313b'
+                        fillColor: '#BDBDBD'
                         },
             onEachFeature : initEvenement}).addTo(carte);
             
@@ -595,9 +571,11 @@ function number_format(number, decimals, dec_point, thousands_sep) {
         ////////////////////////////////////////////////////////////////////////////////////
         plugin.dessiner = function(result,layer) {
     
-       
+           
+
 
             if(layer != undefined && layer != null){
+               
                 // On reinitialise la sélection précédente
                 resetStylelisteLayersSelect(layer);
                 layer.off('mouseout', mouseOut);
@@ -641,10 +619,15 @@ function number_format(number, decimals, dec_point, thousands_sep) {
             else
                 couleurs = new Couleur(result);
 
-
             // Objet geojson
             geojson = L.geoJson(result, {style : appliquerStyle});
             var nbrDeLayers = geojson.getLayers().length;
+
+            
+            if(nbrDeLayers === 1){
+                displayAffichePins(geojson.getLayers()[0]);
+            }
+   
 
             var newgroupe = L.featureGroup();
             newgroupe.addTo(carte);
@@ -663,7 +646,7 @@ function number_format(number, decimals, dec_point, thousands_sep) {
                 legende = new Legende({'couleurs':couleurs}); 
                 legende.addTo(carte);
             }
-            
+
 
         }
         
@@ -679,7 +662,7 @@ function number_format(number, decimals, dec_point, thousands_sep) {
                 .bindLabel( "geo", { className:'labelZone', direction: 'auto', offset:[50, -10] });
             }
             else{
-            layer.on({mouseover: mouseOver,mouseout: mouseOut,click: zoom})
+                layer.on({mouseover: mouseOver,mouseout: mouseOut,click: zoom})
             }
         }
           
@@ -696,8 +679,7 @@ function number_format(number, decimals, dec_point, thousands_sep) {
         
         // Ajoutes les calques à la carte
         var addLayersToMap = function (i,nbrDeLayers) {           
-           setTimeout(function () {  
-               
+
               if(geojson.getLayers()[i] != undefined)
                   listeGeoJson[listeGeoJson.length - 1].addLayer(geojson.getLayers()[i]);
                
@@ -711,7 +693,7 @@ function number_format(number, decimals, dec_point, thousands_sep) {
                   });
                   if(plugin.settings.updateMap)plugin.settings.updateMap();
               }
-           },5); // delay between layer adds in milliseconds
+
         }
         
         
@@ -727,7 +709,7 @@ function number_format(number, decimals, dec_point, thousands_sep) {
             else{
                 
                 layer.setStyle({
-                    fillColor: "#25252c",
+                    fillColor: "#BDBDBD",
                     weight: 1, opacity: 1, 
                 
                     fillOpacity: 1
@@ -759,8 +741,7 @@ function number_format(number, decimals, dec_point, thousands_sep) {
                     });
                 
                 
-                //fillColor: plugin.settings.colorLayerBackground, weight: 1, opacity: 0.1, color: '#000000', fillOpacity: 1weight: 1, opacity: 0,color: plugin.settings.colorLayerContour});
-            }
+           }
         }
         
 
@@ -947,46 +928,89 @@ function number_format(number, decimals, dec_point, thousands_sep) {
         }
         
         
-          // Met à jour les étapes de la navigation des types de territoire sélectionnés
-        var updateBreadcrumb = function(layer){
-            
-            /* console.log("updateBreadcrumb");
-            console.log(layer);*/
 
+       var displayAffichePins = function(layer){
+
+
+            if(carte.hasLayer(affichePins)){
+                carte.removeLayer(affichePins);
+            }
+            
+            if(layer.feature.properties.type == "commune"){
+
+                var latLng = layer.getBounds().getCenter();
+
+                var LeafIcon = L.Icon.extend({
+                  options: {
+                    texte: '',
+                    iconSize:     [200, 40], // size of the icon
+                    shadowAnchor: [0, 0],  // the same for the shadow
+                    className: 'pins-div-icon',
+                    iconAnchor:   [0, 0],
+                  },
+                  createIcon: function () {
+                    var div = document.createElement('div');
+                    var numdiv = document.createElement('p');
+                    numdiv.innerHTML = this.options['texte'] || '';
+                    div.appendChild ( numdiv );
+                    this._setIconStyles(div, 'icon');
+                    return div;
+                 }});
+
+                var myicon = new LeafIcon({texte: 'Voir les établissements'});
+                affichePins = L.marker(latLng,{icon:myicon}).setLatLng(latLng).addTo(carte);
+
+                affichePins.on('click', function(e) {
+                    if(plugin.settings.selectAffichePins)plugin.settings.selectAffichePins(layer);
+                })    
+
+            } 
+
+
+
+       } 
+
+
+        // Met à jour les étapes de la navigation des types de territoire sélectionnés
+       var updateBreadcrumb = function(layer){
+            
+
+            if(carte.hasLayer(affichePins)){
+                carte.removeLayer(affichePins);
+            }
+
+           
+            $('#jq-dropdown-navigation').removeClass('open');
             $('#jq-dropdown-navigation').empty();
             
-            //var button = $('<button id="btn-navigation"  class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent">nnnn</button>');
+            var button = $('<button id="btn-navigation" class="mdl-button mdl-js-button mdl-button--icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="material-icons">&#xE5C4;</i></button>')
 
-            var button = $('<button id="btn-navigation" class="mdl-button mdl-js-button mdl-button--icon"><i class="material-icons">&#xE5C4;</i></button>')
-    
-            var ul = $('<ul />')
-                    .addClass('mdl-menu mdl-menu--bottom-left mdl-js-menu')
-                    .attr('for', 'btn-navigation');
 
-            
             var i = getIndiceGroupeLayers(layer);
-
             listeEtapes.splice(i+1, listeEtapes.length);
             
-            var etape = $('<li/>').addClass('mdl-menu__item')
-            .attr('data-type', layer.feature.properties.parent.type)
-            .attr('data-code', layer.feature.properties.parent.code)
-            .text(layer.feature.properties.parent.nom);
+            //var etape = $('<li/>').addClass('mdl-menu__item')
+            button.attr('data-type', layer.feature.properties.parent.type);
+            button.attr('data-code', layer.feature.properties.parent.code);
+            //.text(layer.feature.properties.parent.nom);
 
-            listeEtapes[i] = etape;
+            //listeEtapes[i] = etape;
 
-            for (var i = listeEtapes.length-1; i >= 0; i--)
-                listeEtapes[i].appendTo(ul);
+           // for (var i = listeEtapes.length-1; i >= 0; i--)
+             //   listeEtapes[i].appendTo(ul);
 
             button.appendTo($('#jq-dropdown-navigation'));
-            ul.appendTo($('#jq-dropdown-navigation'));
+            //ul.appendTo($('#jq-dropdown-navigation'));
             
             componentHandler.upgradeElement(button.get(0));
-            componentHandler.upgradeElement(ul.get(0));
+           // componentHandler.upgradeElement(ul.get(0));
             
-            $('#jq-dropdown-navigation li').on('click', function(e) {
+            $('#jq-dropdown-navigation button').on('click', function(e) {
                 
-                
+                if(carte.hasLayer(affichePins)){
+                    carte.removeLayer(affichePins);
+                }
+
                 var layer = getLayerListeGeoJson($(this).data('code'),$(this).data('type'));
                 
                 // si on a des étapes
@@ -1014,29 +1038,30 @@ function number_format(number, decimals, dec_point, thousands_sep) {
                     
                 }
 
-                
+
+
             });
 
         }
-        
-        
+
        
         
         // Retourne une boite de sélection HTML pour le découpage
         var updateSelectionDecoupage = function(){
 
-            
-             $('#jq-dropdown-decoupe').empty();
+            $('#jq-dropdown-decoupe').removeClass('open');
+            $('#jq-dropdown-decoupe').empty();
             
             //var button = $('<button id="btn-decoupage"  class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored">Découpage du territoire</button>');
             
 
-            var button = $('<button id="btn-decoupage" class="mdl-button mdl-js-button mdl-button--icon"><i class="material-icons">&#xE14E;</i></button>');
-            
+            //var button = $('<button id="btn-decoupage" class="mdl-button mdl-js-button mdl-button--icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="material-icons">&#xE14E;</i></button>');
+            var button = $('<button id="btn-decoupage" class="mdl-button mdl-js-button mdl-button--icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="material-icons">&#xE14E;</i></button>');
+          
             
             var ul = $('<ul />')
-                    .addClass('mdl-menu ' + plugin.settings.decoupeControl.class +' mdl-js-menu')
-                    .attr('for', 'btn-decoupage');
+                    .addClass('dropdown-menu ' + plugin.settings.decoupeControl.class);
+                    //.attr('for', 'btn-decoupage');
 
             if(plugin.settings.zoneSelect.name == 'departement'){
                 button.appendTo($('#jq-dropdown-decoupe'));
@@ -1069,6 +1094,8 @@ function number_format(number, decimals, dec_point, thousands_sep) {
                  componentHandler.upgradeElement(button.get(0));
                  componentHandler.upgradeElement(ul.get(0)); 
             }
+
+
            
             $('#jq-dropdown-decoupe li').on('click', function(e) {
                  plugin.settings.decoupage = {name:"decoupage",value:$(this).data("type")};
@@ -1076,33 +1103,24 @@ function number_format(number, decimals, dec_point, thousands_sep) {
                  if(plugin.settings.selectDecoupage)plugin.settings.selectDecoupage(datas);
              });
         }
-        
-        
+
+
 
         // fire up the plugin!
         // call the "constructor" method
         plugin.init();
+    
+    }   
 
-    }
 
     // add the plugin to the jQuery.fn object
     $.fn.geometiers = function(options) {
-
-        // iterate through the DOM elements we are attaching the plugin to
+      
         return this.each(function() {
-
-            // if plugin has not already been attached to the element
+ 
             if (undefined == $(this).data('geometiers')) {
 
-                // create a new instance of the plugin
-                // pass the DOM element and the user-provided options as arguments
                 var plugin = new $.geometiers(this, options);
-
-                // in the jQuery version of the element
-                // store a reference to the plugin object
-                // you can later access the plugin and its methods and properties like
-                // element.data('pluginName').publicMethod(arg1, arg2, ... argn) or
-                // element.data('pluginName').settings.propertyName
                 $(this).data('geometiers', plugin);
 
             }
@@ -1111,8 +1129,5 @@ function number_format(number, decimals, dec_point, thousands_sep) {
 
     }
 
+
 })(jQuery);
-
-
-
-})(this);
