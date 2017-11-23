@@ -2120,6 +2120,9 @@ var Couleur = (function () {
         ////////////////////////////////////////////////////////////////////////////////////
         plugin.dessiner = function(result,layer) {
     
+           
+
+
             if(layer != undefined && layer != null){
                
                 // On reinitialise la sélection précédente
@@ -2168,6 +2171,12 @@ var Couleur = (function () {
             // Objet geojson
             geojson = L.geoJson(result, {style : appliquerStyle});
             var nbrDeLayers = geojson.getLayers().length;
+
+            
+            if(nbrDeLayers === 1){
+                displayAffichePins(geojson.getLayers()[0]);
+            }
+   
 
             var newgroupe = L.featureGroup();
             newgroupe.addTo(carte);
@@ -2219,8 +2228,7 @@ var Couleur = (function () {
         
         // Ajoutes les calques à la carte
         var addLayersToMap = function (i,nbrDeLayers) {           
-           //setTimeout(function () {  
-               
+
               if(geojson.getLayers()[i] != undefined)
                   listeGeoJson[listeGeoJson.length - 1].addLayer(geojson.getLayers()[i]);
                
@@ -2234,7 +2242,7 @@ var Couleur = (function () {
                   });
                   if(plugin.settings.updateMap)plugin.settings.updateMap();
               }
-           //},0); // delay between layer adds in milliseconds
+
         }
         
         
@@ -2469,13 +2477,14 @@ var Couleur = (function () {
         }
         
         
-        // Met à jour les étapes de la navigation des types de territoire sélectionnés
-       var updateBreadcrumb = function(layer){
-            
-            if(carte.hasLayer(affichePins)){
-                    carte.removeLayer(affichePins);
-            }
 
+       var displayAffichePins = function(layer){
+
+
+            if(carte.hasLayer(affichePins)){
+                carte.removeLayer(affichePins);
+            }
+            
             if(layer.feature.properties.type == "commune"){
 
                 var latLng = layer.getBounds().getCenter();
@@ -2505,9 +2514,21 @@ var Couleur = (function () {
                 })    
 
             } 
-          
 
 
+
+       } 
+
+
+        // Met à jour les étapes de la navigation des types de territoire sélectionnés
+       var updateBreadcrumb = function(layer){
+            
+
+            if(carte.hasLayer(affichePins)){
+                carte.removeLayer(affichePins);
+            }
+
+           
             $('#jq-dropdown-navigation').removeClass('open');
             $('#jq-dropdown-navigation').empty();
             
