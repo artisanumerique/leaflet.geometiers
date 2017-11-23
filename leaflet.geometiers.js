@@ -451,7 +451,7 @@ var Couleur = (function () {
             // Initialisation de la carte
             carte = new L.Map($element.attr("id"), {
                   zoomControl: false,
-                  minZoom: 9,
+                  minZoom: 7,
                   maxZoom: 16, 
                   attributionControl: false,
                   dragging: true,
